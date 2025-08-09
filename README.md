@@ -12,7 +12,7 @@ A modern, animated currency converter mobile app built with Flutter using BLoC a
 
 ### 💱 Currency Conversion
 - Real-time currency conversion using CurrencyLayer API
-- Support for 12 major currencies (USD, INR, EUR, AED, GBP, JPY, CAD, AUD, CHF, CNY, NZD, SGD)
+- Support for 4 major currencies (USD, INR, EUR, AED)
 - Interactive currency selection with animated dropdowns
 - Quick amount selection buttons
 - Amount validation (positive values, max $100,000)
@@ -31,90 +31,92 @@ A modern, animated currency converter mobile app built with Flutter using BLoC a
 - Responsive layout for all screen sizes
 
 ### 📊 Real-time Information
-- Live exchange rates with timestamps
 - Cache status indicators
 - Error handling with user-friendly messages
 - Loading states with progress indicators
 
 ## Architecture
 
-The app follows Clean Architecture principles with BLoC pattern:
+The app follows BLoC pattern with clean separation of concerns:
 
 ```
 lib/
-├── main.dart
-├── core/
-│   └── di/
-│       └── injection_container.dart
+├── main.dart                          # App entry point with Firebase initialization
+├── app.dart                           # Main app widget with BLoC providers
+├── firebase_options.dart              # Firebase configuration
+├── config/
+│   ├── contants.dart                  # Currency symbols and names
+│   └── env.dart                       # Environment configuration
+├── data/
+│   ├── models/
+│   │   ├── currency_model.dart        # Currency data model
+│   │   └── rate_cache.dart            # Cache model for exchange rates
+│   └── services/
+│       ├── api_service.dart           # Currency API service
+│       └── auth_service.dart          # Firebase authentication service
 ├── features/
-│   ├── auth/
-│   │   ├── data/
-│   │   │   ├── models/
-│   │   │   │   └── user_model.dart
-│   │   │   └── repositories/
-│   │   │       └── auth_repository_impl.dart
-│   │   ├── domain/
-│   │   │   ├── entities/
-│   │   │   │   └── user_entity.dart
-│   │   │   ├── repositories/
-│   │   │   │   └── auth_repository.dart
-│   │   │   └── usecases/
-│   │   │       ├── sign_in_usecase.dart
-│   │   │       ├── sign_out_usecase.dart
-│   │   │       └── reset_password_usecase.dart
-│   │   └── presentation/
-│   │       ├── bloc/
-│   │       │   ├── auth_bloc.dart
-│   │       │   ├── auth_event.dart
-│   │       │   └── auth_state.dart
-│   │       └── pages/
-│   │           └── login_page.dart
-│   └── currency/
-│       ├── data/
-│       │   ├── models/
-│       │   │   └── conversion_result_model.dart
-│       │   └── repositories/
-│       │       └── currency_repository_impl.dart
-│       ├── domain/
-│       │   ├── entities/
-│       │   │   ├── conversion_result_entity.dart
-│       │   │   └── currency_entity.dart
-│       │   ├── repositories/
-│       │   │   └── currency_repository.dart
-│       │   └── usecases/
-│       │       ├── convert_currency_usecase.dart
-│       │       └── get_current_rate_usecase.dart
-│       └── presentation/
-│           ├── bloc/
-│           │   ├── currency_bloc.dart
-│           │   ├── currency_event.dart
-│           │   ├── currency_state.dart
-│           │   ├── currency_selector_bloc.dart
-│           │   └── amount_input_bloc.dart
-│           └── pages/
-│               └── currency_selector_page.dart
-└── screens/
-    └── converter/
-        ├── amount_input_screen.dart
-        └── result_screen.dart
+│   ├── authentication/
+│   │   ├── bloc/
+│   │   │   ├── auth_bloc.dart         # Authentication BLoC
+│   │   │   ├── auth_event.dart        # Authentication events
+│   │   │   └── auth_state.dart        # Authentication states
+│   │   └── views/
+│   │       └── login_screen.dart      # Login UI
+│   └── currency_converter/
+│       ├── bloc/
+│       │   ├── converter_bloc.dart    # Currency conversion BLoC
+│       │   ├── converter_event.dart   # Conversion events
+│       │   └── converter_state.dart   # Conversion states
+│       └── views/
+│           ├── amount_input.dart      # Amount input screen
+│           ├── currency_selector.dart # Currency selection screen
+│           ├── error_screen.dart      # Error handling screen
+│           ├── result_screen.dart     # Conversion result screen
+│           └── widget/
+│               ├── currency_chip_widget.dart  # Currency selection chips
+│               ├── info_tile_widget.dart      # Information display tiles
+│               └── result_body_widget.dart    # Result display widget
+└── routes/
+    ├── app_router.dart                # GoRouter configuration
+    └── route_paths.dart               # Route path definitions
 ```
 
 ## Caching Strategy
 
-### Cache Duration
-- **Fresh Cache**: 5 minutes (optimal user experience)
-- **Stale Cache**: 30 minutes (fallback for offline/API issues)
+The app implements a sophisticated multi-layered caching system to ensure optimal performance and offline functionality.
 
-### Cache Behavior
-1. **API Available**: Fetch fresh rates and cache them
-2. **API Unavailable + Fresh Cache**: Use cached data (green indicator)
-3. **API Unavailable + Stale Cache**: Use cached data with warning (orange/red indicator)
-4. **No Cache Available**: Show error message
+### Cache Implementation Details
+- **Storage**: Uses `SharedPreferences` for persistent local storage
+- **Cache Key**: Combination of currency pairs (e.g., "USD_EUR")
+- **Data Structure**: `RateCacheEntry` model with rate, timestamp, and currency pair
+- **Cache File**: Stored as JSON in device preferences with key `rate_cache_v1`
 
-### Cache Indicators
-- 🟢 **Fresh**: Rate is less than 5 minutes old
-- 🟠 **Cached**: Rate is between 5-30 minutes old
+### Cache Duration & Logic
+- **Fresh Cache**: 5 minutes (defined in `Env.freshDuration`)
+- **Fallback Cache**: 30 minutes (defined in `Env.fallbackDuration`)
+
+### Smart Cache Behavior
+The `getBestRate()` function implements intelligent cache logic:
+
+1. **Check Fresh Cache First**: If cached data exists and is under 5 minutes old, return immediately
+2. **Try API Call**: Attempt to fetch fresh rate from CurrencyLayer API
+3. **Update Cache**: Save successful API response to cache with timestamp
+4. **Fallback on API Failure**: If API fails, check if cached data exists under 30 minutes old
+5. **Error Handling**: Throw exception only if no usable cache data available
+
+
+
+
+### Cache Indicators & User Experience
+- 🟢 **Fresh**: Rate is less than 5 minutes old (optimal experience)
+- 🟠 **Cached**: Rate is between 5-30 minutes old (acceptable for offline use)
 - 🔴 **Stale Cache**: Rate is older than 5 minutes (shown when API fails)
+
+### Cache Benefits
+- **Offline Functionality**: App works completely offline with cached rates
+- **Reduced API Calls**: Minimizes unnecessary API requests and costs
+- **Faster Response**: Instant results for recently cached rates
+- **Battery Efficiency**: Less network usage improves battery life
 
 ## API Integration
 
@@ -182,32 +184,28 @@ Future<Map<String, dynamic>?> getBestRate({
 - Android Studio / VS Code
 - Firebase project
 
-### Installation
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   flutter pub get
-   ```
-3. Configure Firebase:
-   - Add `google-services.json` to `android/app/`
-   - Add `GoogleService-Info.plist` to `ios/Runner/`
-4. Run the app:
-   ```bash
-   flutter run
-   ```
+
 
 ### Dependencies
 ```yaml
 dependencies:
-  flutter_bloc: ^9.1.1
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
   firebase_core: ^4.0.0
   firebase_auth: ^6.0.0
   http: ^1.1.0
+  flutter_bloc: ^9.1.1
   equatable: ^2.0.5
   shared_preferences: ^2.2.2
-  lottie: ^3.0.0
   cached_network_image: ^3.3.0
   connectivity_plus: ^5.0.2
+  go_router: ^14.2.7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
 ```
 
 ## Usage Flow
@@ -218,62 +216,7 @@ dependencies:
 4. **View Results**: See conversion with rate information and cache status
 5. **Continue**: Convert another amount or start new conversion
 
-## Error Handling
+## API Failure Handling
 
-### Network Errors
-- Graceful fallback to cached data
-- User-friendly error messages
-- Retry mechanisms
+The app implements robust error handling and recovery mechanisms to ensure a smooth user experience even when the API is unavailable.
 
-### API Errors
-- Proper error parsing and display
-- Fallback to cached rates when possible
-- Clear error state management
-
-### Validation Errors
-- Real-time input validation
-- Clear error messages
-- Prevent invalid conversions
-
-## Performance Features
-
-- **Efficient Caching**: In-memory cache with timestamps
-- **Optimized API Calls**: Avoid duplicate requests within cache window
-- **Smooth Animations**: Hardware-accelerated animations
-- **Responsive UI**: Adapts to different screen sizes
-
-## Testing
-
-The app includes comprehensive testing:
-- Unit tests for business logic
-- Widget tests for UI components
-- Integration tests for user flows
-
-Run tests with:
-```bash
-flutter test
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License.
-
-## Demo
-
-The app includes smooth animations and transitions inspired by modern mobile apps:
-- Slide transitions between screens
-- Fade-in animations for content
-- Interactive button animations
-- Fluid currency selection experience
-
-## Support
-
-For support or questions, please open an issue in the repository.

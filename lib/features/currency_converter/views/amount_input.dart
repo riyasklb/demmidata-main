@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:currency_converter/features/currency_converter/views/widget/currency_chip_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -7,19 +8,8 @@ import '../bloc/converter_event.dart';
 import '../bloc/converter_state.dart';
 import '../../../routes/route_paths.dart';
 
-// Optional: Currency symbols/names mappings
-const Map<String, String> currencySymbols = {
-  'USD': '\$',
-  'EUR': '€',
-  'INR': '₹',
-  'AED': 'د.إ',
-};
-const Map<String, String> currencyNames = {
-  'USD': 'US Dollar',
-  'EUR': 'Euro',
-  'INR': 'Indian Rupee',
-  'AED': 'UAE Dirham',
-};
+
+
 
 class AmountInputScreen extends StatefulWidget {
   const AmountInputScreen({super.key});
@@ -32,7 +22,7 @@ class _AmountInputScreenState extends State<AmountInputScreen> with TickerProvid
 
   late AnimationController _entranceController;
   late Animation<double> _fieldAnim, _chipsAnim, _buttonAnim;
-  bool _isConvertPressed = false; // Only navigate if this is true
+  bool _isConvertPressed = false; 
 
   @override
   void initState() {
@@ -60,7 +50,7 @@ class _AmountInputScreenState extends State<AmountInputScreen> with TickerProvid
     return Scaffold(
       body: Stack(
         children: [
-          // Animated gradient background
+        
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -70,12 +60,12 @@ class _AmountInputScreenState extends State<AmountInputScreen> with TickerProvid
               ),
             ),
           ),
-          // Decorative icons for finance look
+       
           Positioned(top: 80, left: 24, child: Icon(Icons.account_balance_wallet, size: 68, color: Colors.white.withOpacity(0.12))),
           Positioned(top: 270, right: 18, child: Icon(Icons.pie_chart, size: 52, color: Colors.white.withOpacity(0.11))),
           Positioned(bottom: 100, left: 60, child: Icon(Icons.attach_money, size: 46, color: Colors.indigo.withOpacity(0.15))),
           Positioned(bottom: -30, right: 40, child: Icon(Icons.monetization_on, size: 70, color: Colors.purpleAccent.withOpacity(0.13))),
-          // Main input card
+        
           Align(
             alignment: Alignment.center,
             child: FadeTransition(
@@ -104,10 +94,10 @@ class _AmountInputScreenState extends State<AmountInputScreen> with TickerProvid
                         ),
                         child: BlocConsumer<ConverterBloc, ConverterState>(
                           listener: (context, state) {
-                            // Only navigate if the button was pressed!
+                         
                             if (!_isConvertPressed) return;
                             if (state.status == ConverterStatus.success) {
-                              _isConvertPressed = false; // Reset flag
+                              _isConvertPressed = false; 
                               context.push(RoutePaths.result);
                             } else if (state.status == ConverterStatus.error && state.errorMessage != null) {
                               _isConvertPressed = false;
@@ -143,14 +133,14 @@ class _AmountInputScreenState extends State<AmountInputScreen> with TickerProvid
                                           decoration: InputDecoration(
                                             border: InputBorder.none,
                                             hintText: 'Enter amount',
-                                            hintStyle: TextStyle(color: Colors.white),
+                                            hintStyle: TextStyle(color: Colors.white,),
                                             labelText: 'Amount (${state.fromCurrency})',
-                                            labelStyle: TextStyle(color: const Color.fromARGB(255, 0, 23, 61), fontWeight: FontWeight.w600),
+                                            labelStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
                                           ),
                                           style: TextStyle(fontSize: 36, color: Colors.white, fontWeight: FontWeight.bold),
                                           textAlign: TextAlign.center,
                                           onChanged: (v) {
-                                            // Only updates state (no conversion triggered)
+                                           
                                             final value = double.tryParse(v) ?? 0;
                                             context.read<ConverterBloc>().add(AmountChanged(value));
                                           },
@@ -165,12 +155,12 @@ class _AmountInputScreenState extends State<AmountInputScreen> with TickerProvid
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      _CurrencyChip(
+                                      CurrencyChip(
                                         currencyCode: state.fromCurrency,
                                         label: 'From',
                                       ),
                                       Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 28),
-                                      _CurrencyChip(
+                                      CurrencyChip(
                                         currencyCode: state.toCurrency,
                                         label: 'To',
                                       ),
@@ -229,61 +219,6 @@ class _AmountInputScreenState extends State<AmountInputScreen> with TickerProvid
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// Stylized Currency Chip (no flag, uses icon)
-class _CurrencyChip extends StatelessWidget {
-  final String currencyCode;
-  final String label;
-
-  const _CurrencyChip({required this.currencyCode, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    IconData iconData = Icons.monetization_on;
-    if (currencyCode == 'INR') iconData = Icons.currency_rupee;
-    if (currencyCode == 'USD') iconData = Icons.attach_money;
-    if (currencyCode == 'EUR') iconData = Icons.euro;
-    if (currencyCode == 'AED') iconData = Icons.money;
-
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 6),
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 11),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.indigo.shade500.withOpacity(0.30),
-            Colors.deepPurple.shade400.withOpacity(0.26),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(32),
-        boxShadow: [BoxShadow(color: Colors.indigo.shade400.withOpacity(0.13), blurRadius: 10, offset: Offset(0, 4))],
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 17,
-            backgroundColor: Colors.white.withOpacity(0.93),
-            child: Icon(iconData, color: Colors.deepPurple, size: 24),
-          ),
-          SizedBox(width: 9),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                currencyCode,
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 17),
-              ),
-              Text(
-                label,
-                style: TextStyle(color: Colors.purpleAccent.shade100, fontSize: 11, fontWeight: FontWeight.w400),
-              ),
-            ],
           ),
         ],
       ),

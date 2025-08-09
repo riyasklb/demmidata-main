@@ -81,8 +81,12 @@ class _LoginScreenContentState extends State<_LoginScreenContent>
         animation: _bgController,
         builder: (context, child) {
           return Container(
-            decoration: const BoxDecoration(
-              color: Colors.blueGrey,
+            decoration:  BoxDecoration(
+               gradient: LinearGradient(
+                colors: [Colors.deepPurple.shade400, Colors.indigo.shade700],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
             ),
             child: child,
           );
@@ -115,7 +119,7 @@ class _LoginScreenContentState extends State<_LoginScreenContent>
                     ScaleTransition(
                       scale: _logoAnim,
                       child: Icon(
-                        Icons.flight_takeoff, 
+                        Icons.currency_bitcoin, 
                         size: 60, 
                         color: Colors.white.withOpacity(0.8)
                       ),

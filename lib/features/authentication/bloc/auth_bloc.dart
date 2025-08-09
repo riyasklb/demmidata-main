@@ -103,7 +103,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 }
 
-// Internal events to sync with stream without exposing to UI
+
 class _InternalAuthenticated extends AuthEvent {
   const _InternalAuthenticated();
 }
