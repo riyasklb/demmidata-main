@@ -37,12 +37,6 @@ class AppRouter {
           pageBuilder: (context, state) => _slide(const ErrorScreen(), fromRight: false),
         ),
       ],
-      redirect: (context, state) {
-        final goingToLogin = state.matchedLocation == RoutePaths.login;
-        if (!isAuthenticated && !goingToLogin) return RoutePaths.login;
-        if (isAuthenticated && goingToLogin) return RoutePaths.selector;
-        return null;
-      },
     );
   }
 

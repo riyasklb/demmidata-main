@@ -15,6 +15,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LoginRequested>(_onLoginRequested);
     on<RegisterRequested>(_onRegisterRequested);
     on<LogoutRequested>(_onLogoutRequested);
+    on<_InternalAuthenticated>(_onInternalAuthenticated);
+    on<_InternalUnauthenticated>(_onInternalUnauthenticated);
 
     _authSub = authService.userIdStream.listen((userId) {
       if (userId != null) {
@@ -56,6 +58,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onLogoutRequested(LogoutRequested event, Emitter<AuthState> emit) async {
     emit(const AuthLoading());
     await authService.signOut();
+    emit(const Unauthenticated());
+  }
+
+  Future<void> _onInternalAuthenticated(_InternalAuthenticated event, Emitter<AuthState> emit) async {
+    final userId = authService.currentUserId;
+    if (userId != null) {
+      emit(Authenticated(userId: userId));
+    }
+  }
+
+  Future<void> _onInternalUnauthenticated(_InternalUnauthenticated event, Emitter<AuthState> emit) async {
     emit(const Unauthenticated());
   }
 
