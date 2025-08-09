@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../bloc/converter_bloc.dart';
 import '../bloc/converter_state.dart';
@@ -72,7 +73,7 @@ class _ResultBody extends StatelessWidget {
               ),
               const Spacer(),
               FilledButton.tonal(
-                onPressed: () => Navigator.of(context).popUntil((r) => r.isFirst),
+                onPressed: () => context.go('/selector'),
                 child: const Padding(
                   padding: EdgeInsets.symmetric(vertical: 12),
                   child: Text('Start Over'),

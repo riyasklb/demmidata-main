@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class ErrorScreen extends StatelessWidget {
   static const String routeName = '/error';
@@ -6,7 +7,7 @@ class ErrorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String? message = ModalRoute.of(context)?.settings.arguments as String?;
+    final String? message = GoRouterState.of(context).extra as String?;
     return Scaffold(
       appBar: AppBar(title: const Text('Offline / Error')),
       body: Center(
@@ -22,7 +23,7 @@ class ErrorScreen extends StatelessWidget {
               const Text('If available, we will show cached values within the last 30 minutes.'),
               const SizedBox(height: 24),
               FilledButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () => context.pop(),
                 child: const Text('Go Back'),
               )
             ],

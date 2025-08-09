@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
+import 'package:go_router/go_router.dart';
 import '../../currency_converter/views/currency_selector.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -27,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is Authenticated) {
-              Navigator.of(context).pushReplacementNamed(CurrencySelectorScreen.routeName);
+              context.go(CurrencySelectorScreen.routeName);
             }
             if (state is Unauthenticated && state.errorMessage != null) {
               ScaffoldMessenger.of(context).showSnackBar(

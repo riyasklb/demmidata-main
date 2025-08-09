@@ -5,6 +5,7 @@ import '../bloc/converter_bloc.dart';
 import '../bloc/converter_event.dart';
 import '../bloc/converter_state.dart';
 import '../models/currency_model.dart';
+import 'package:go_router/go_router.dart';
 import 'amount_input.dart';
 
 class CurrencySelectorScreen extends StatelessWidget {
@@ -52,7 +53,7 @@ class CurrencySelectorScreen extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton(
-                      onPressed: () => Navigator.of(context).pushNamed(AmountInputScreen.routeName),
+                      onPressed: () => context.push(AmountInputScreen.routeName),
                       child: const Padding(
                         padding: EdgeInsets.symmetric(vertical: 14),
                         child: Text('Next'),

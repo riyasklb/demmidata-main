@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/converter_bloc.dart';
 import '../bloc/converter_event.dart';
 import '../bloc/converter_state.dart';
+import 'package:go_router/go_router.dart';
 import 'result_screen.dart';
 import 'error_screen.dart';
 
@@ -33,9 +34,9 @@ class _AmountInputScreenState extends State<AmountInputScreen> with SingleTicker
         child: BlocConsumer<ConverterBloc, ConverterState>(
           listener: (context, state) {
             if (state.status == ConverterStatus.success || state.status == ConverterStatus.loading) {
-              Navigator.of(context).pushNamed(ResultScreen.routeName);
+              context.push(ResultScreen.routeName);
             } else if (state.status == ConverterStatus.error && state.errorMessage != null) {
-              Navigator.of(context).pushNamed(ErrorScreen.routeName, arguments: state.errorMessage);
+              context.push(ErrorScreen.routeName, extra: state.errorMessage);
             }
           },
           builder: (context, state) {
