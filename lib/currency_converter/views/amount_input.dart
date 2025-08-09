@@ -5,11 +5,9 @@ import '../bloc/converter_bloc.dart';
 import '../bloc/converter_event.dart';
 import '../bloc/converter_state.dart';
 import 'package:go_router/go_router.dart';
-import 'result_screen.dart';
-import 'error_screen.dart';
+import '../../routes/route_paths.dart';
 
 class AmountInputScreen extends StatefulWidget {
-  static const String routeName = '/amount';
   const AmountInputScreen({super.key});
 
   @override
@@ -34,9 +32,9 @@ class _AmountInputScreenState extends State<AmountInputScreen> with SingleTicker
         child: BlocConsumer<ConverterBloc, ConverterState>(
           listener: (context, state) {
             if (state.status == ConverterStatus.success || state.status == ConverterStatus.loading) {
-              context.push(ResultScreen.routeName);
+              context.push(RoutePaths.result);
             } else if (state.status == ConverterStatus.error && state.errorMessage != null) {
-              context.push(ErrorScreen.routeName, extra: state.errorMessage);
+              context.push(RoutePaths.error, extra: state.errorMessage);
             }
           },
           builder: (context, state) {

@@ -6,16 +6,27 @@ import '../bloc/converter_event.dart';
 import '../bloc/converter_state.dart';
 import '../models/currency_model.dart';
 import 'package:go_router/go_router.dart';
-import 'amount_input.dart';
+import '../../routes/route_paths.dart';
+import '../../authentication/bloc/auth_bloc.dart';
+import '../../authentication/bloc/auth_event.dart';
 
 class CurrencySelectorScreen extends StatelessWidget {
-  static const String routeName = '/selector';
   const CurrencySelectorScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Select Currencies')),
+      appBar: AppBar(
+        title: const Text('Select Currencies'),
+        leading: IconButton(
+          tooltip: 'Logout',
+          icon: const Icon(Icons.logout),
+          onPressed: () {
+            context.read<AuthBloc>().add(const LogoutRequested());
+            context.go(RoutePaths.login);
+          },
+        ),
+      ),
       body: SafeArea(
         child: BlocBuilder<ConverterBloc, ConverterState>(
           builder: (context, state) {
@@ -53,7 +64,7 @@ class CurrencySelectorScreen extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton(
-                      onPressed: () => context.push(AmountInputScreen.routeName),
+                      onPressed: () => context.push(RoutePaths.amount),
                       child: const Padding(
                         padding: EdgeInsets.symmetric(vertical: 14),
                         child: Text('Next'),

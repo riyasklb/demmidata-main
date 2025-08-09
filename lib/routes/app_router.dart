@@ -6,6 +6,7 @@ import '../currency_converter/views/amount_input.dart';
 import '../currency_converter/views/currency_selector.dart';
 import '../currency_converter/views/error_screen.dart';
 import '../currency_converter/views/result_screen.dart';
+import 'route_paths.dart';
 
 class AppRouter {
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -13,33 +14,33 @@ class AppRouter {
   static GoRouter createRouter({required bool isAuthenticated}) {
     return GoRouter(
       navigatorKey: navigatorKey,
-      initialLocation: isAuthenticated ? CurrencySelectorScreen.routeName : LoginScreen.routeName,
+      initialLocation: isAuthenticated ? RoutePaths.selector : RoutePaths.login,
       routes: [
         GoRoute(
-          path: LoginScreen.routeName,
+          path: RoutePaths.login,
           pageBuilder: (context, state) => _slide(const LoginScreen()),
         ),
         GoRoute(
-          path: CurrencySelectorScreen.routeName,
+          path: RoutePaths.selector,
           pageBuilder: (context, state) => _slide(const CurrencySelectorScreen()),
         ),
         GoRoute(
-          path: AmountInputScreen.routeName,
+          path: RoutePaths.amount,
           pageBuilder: (context, state) => _flip(const AmountInputScreen()),
         ),
         GoRoute(
-          path: ResultScreen.routeName,
+          path: RoutePaths.result,
           pageBuilder: (context, state) => _scale(const ResultScreen()),
         ),
         GoRoute(
-          path: ErrorScreen.routeName,
+          path: RoutePaths.error,
           pageBuilder: (context, state) => _slide(const ErrorScreen(), fromRight: false),
         ),
       ],
       redirect: (context, state) {
-        final goingToLogin = state.matchedLocation == LoginScreen.routeName;
-        if (!isAuthenticated && !goingToLogin) return LoginScreen.routeName;
-        if (isAuthenticated && goingToLogin) return CurrencySelectorScreen.routeName;
+        final goingToLogin = state.matchedLocation == RoutePaths.login;
+        if (!isAuthenticated && !goingToLogin) return RoutePaths.login;
+        if (isAuthenticated && goingToLogin) return RoutePaths.selector;
         return null;
       },
     );

@@ -5,10 +5,9 @@ import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
 import 'package:go_router/go_router.dart';
-import '../../currency_converter/views/currency_selector.dart';
+import '../../routes/route_paths.dart';
 
 class LoginScreen extends StatefulWidget {
-  static const String routeName = '/login';
   const LoginScreen({super.key});
 
   @override
@@ -28,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is Authenticated) {
-              context.go(CurrencySelectorScreen.routeName);
+              context.go(RoutePaths.selector);
             }
             if (state is Unauthenticated && state.errorMessage != null) {
               ScaffoldMessenger.of(context).showSnackBar(

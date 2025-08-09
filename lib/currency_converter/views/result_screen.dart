@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../routes/route_paths.dart';
 
 import '../bloc/converter_bloc.dart';
 import '../bloc/converter_state.dart';
 
 class ResultScreen extends StatelessWidget {
-  static const String routeName = '/result';
   const ResultScreen({super.key});
 
   @override
@@ -73,7 +73,7 @@ class _ResultBody extends StatelessWidget {
               ),
               const Spacer(),
               FilledButton.tonal(
-                onPressed: () => context.go('/selector'),
+                onPressed: () => context.go(RoutePaths.selector),
                 child: const Padding(
                   padding: EdgeInsets.symmetric(vertical: 12),
                   child: Text('Start Over'),
