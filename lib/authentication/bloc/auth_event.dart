@@ -32,4 +32,17 @@ class LogoutRequested extends AuthEvent {
   const LogoutRequested();
 }
 
+// UI State Management Events
+class TogglePasswordVisibility extends AuthEvent {
+  const TogglePasswordVisibility();
+}
+
+class ToggleAuthMode extends AuthEvent {
+  const ToggleAuthMode();
+}
+
+class ClearError extends AuthEvent {
+  const ClearError();
+}
+
 

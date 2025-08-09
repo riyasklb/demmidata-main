@@ -24,10 +24,29 @@ class Authenticated extends AuthState {
 
 class Unauthenticated extends AuthState {
   final String? errorMessage;
-  const Unauthenticated({this.errorMessage});
+  final bool isRegister;
+  final bool isPasswordVisible;
+  
+  const Unauthenticated({
+    this.errorMessage,
+    this.isRegister = false,
+    this.isPasswordVisible = false,
+  });
+
+  Unauthenticated copyWith({
+    String? errorMessage,
+    bool? isRegister,
+    bool? isPasswordVisible,
+  }) {
+    return Unauthenticated(
+      errorMessage: errorMessage ?? this.errorMessage,
+      isRegister: isRegister ?? this.isRegister,
+      isPasswordVisible: isPasswordVisible ?? this.isPasswordVisible,
+    );
+  }
 
   @override
-  List<Object?> get props => [errorMessage];
+  List<Object?> get props => [errorMessage, isRegister, isPasswordVisible];
 }
 
 

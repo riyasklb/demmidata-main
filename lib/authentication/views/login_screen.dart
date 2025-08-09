@@ -6,18 +6,26 @@ import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
 import '../../routes/route_paths.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  Widget build(BuildContext context) {
+    return const _LoginScreenContent();
+  }
 }
 
-class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin {
+class _LoginScreenContent extends StatefulWidget {
+  const _LoginScreenContent();
+
+  @override
+  State<_LoginScreenContent> createState() => _LoginScreenContentState();
+}
+
+class _LoginScreenContentState extends State<_LoginScreenContent> 
+    with TickerProviderStateMixin {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _isRegister = false;
-  bool _obscure = true;
 
   late AnimationController _bgController;
   late AnimationController _formController;
@@ -30,19 +38,31 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   void initState() {
     super.initState();
     _bgController = AnimationController(
-      duration: Duration(seconds: 3),
+      duration: const Duration(seconds: 3),
       vsync: this,
     )..repeat(reverse: true);
 
     _formController = AnimationController(
-      duration: Duration(milliseconds: 1400),
+      duration: const Duration(milliseconds: 1400),
       vsync: this,
     )..forward();
 
-    _logoAnim = CurvedAnimation(parent: _formController, curve: Interval(0.0, 0.3, curve: Curves.easeOut));
-    _headerAnim = CurvedAnimation(parent: _formController, curve: Interval(0.25, 0.5, curve: Curves.easeOut));
-    _fieldsAnim = CurvedAnimation(parent: _formController, curve: Interval(0.4, 0.7, curve: Curves.easeOut));
-    _buttonAnim = CurvedAnimation(parent: _formController, curve: Interval(0.65, 1.0, curve: Curves.easeOut));
+    _logoAnim = CurvedAnimation(
+      parent: _formController, 
+      curve: const Interval(0.0, 0.3, curve: Curves.easeOut)
+    );
+    _headerAnim = CurvedAnimation(
+      parent: _formController, 
+      curve: const Interval(0.25, 0.5, curve: Curves.easeOut)
+    );
+    _fieldsAnim = CurvedAnimation(
+      parent: _formController, 
+      curve: const Interval(0.4, 0.7, curve: Curves.easeOut)
+    );
+    _buttonAnim = CurvedAnimation(
+      parent: _formController, 
+      curve: const Interval(0.65, 1.0, curve: Curves.easeOut)
+    );
   }
 
   @override
@@ -61,15 +81,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
         animation: _bgController,
         builder: (context, child) {
           return Container(
-            decoration: BoxDecoration(color: Colors.blueGrey
-              // gradient: LinearGradient(
-              //   // colors: [
-              //   //   Color.lerp(Colors.blueAccent, Colors.purpleAccent, _bgController.value)!,
-              //   //   Color.lerp(Colors.cyan, Colors.deepPurple, _bgController.value)!,
-              //   // ],
-              //   begin: Alignment.topLeft,
-              //   end: Alignment.bottomRight,
-              // ),
+            decoration: const BoxDecoration(
+              color: Colors.blueGrey,
             ),
             child: child,
           );
@@ -84,10 +97,14 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(state.errorMessage!)),
                 );
+                // Clear error after showing snackbar
+                context.read<AuthBloc>().add(const ClearError());
               }
             },
             builder: (context, state) {
               final isLoading = state is AuthLoading;
+              final isRegister = state is Unauthenticated ? state.isRegister : false;
+              final isPasswordVisible = state is Unauthenticated ? state.isPasswordVisible : false;
 
               return Padding(
                 padding: const EdgeInsets.all(24.0),
@@ -97,16 +114,24 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                     const Spacer(),
                     ScaleTransition(
                       scale: _logoAnim,
-                      child: Icon(Icons.flight_takeoff, size: 60, color: Colors.white.withOpacity(0.8)),
+                      child: Icon(
+                        Icons.flight_takeoff, 
+                        size: 60, 
+                        color: Colors.white.withOpacity(0.8)
+                      ),
                     ),
                     FadeTransition(
                       opacity: _headerAnim,
                       child: AnimatedSwitcher(
-                        duration: Duration(milliseconds: 350),
+                        duration: const Duration(milliseconds: 350),
                         child: Text(
-                          _isRegister ? 'Create Account' : 'Welcome Back',
-                          key: ValueKey(_isRegister),
-                          style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold, color: Colors.white),
+                          isRegister ? 'Create Account' : 'Welcome Back',
+                          key: ValueKey(isRegister),
+                          style: const TextStyle(
+                            fontSize: 27, 
+                            fontWeight: FontWeight.bold, 
+                            color: Colors.white
+                          ),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -124,29 +149,46 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                               filled: true,
                               fillColor: Colors.white.withOpacity(0.13),
                               labelText: 'Email',
-                              labelStyle: TextStyle(color: Colors.white70),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                              prefixIcon: Icon(Icons.mail_outline, color: Colors.white70),
+                              labelStyle: const TextStyle(color: Colors.white70),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12)
+                              ),
+                              prefixIcon: const Icon(
+                                Icons.mail_outline, 
+                                color: Colors.white70
+                              ),
                             ),
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                           ),
                           const SizedBox(height: 12),
                           TextField(
                             controller: _passwordController,
-                            obscureText: _obscure,
+                            obscureText: !isPasswordVisible,
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: Colors.white.withOpacity(0.13),
                               labelText: 'Password',
-                              labelStyle: TextStyle(color: Colors.white70),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                              prefixIcon: Icon(Icons.lock_outline, color: Colors.white70),
+                              labelStyle: const TextStyle(color: Colors.white70),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12)
+                              ),
+                              prefixIcon: const Icon(
+                                Icons.lock_outline, 
+                                color: Colors.white70
+                              ),
                               suffixIcon: IconButton(
-                                icon: Icon(_obscure ? Icons.visibility : Icons.visibility_off, color: Colors.white70),
-                                onPressed: () => setState(() => _obscure = !_obscure),
+                                icon: Icon(
+                                  isPasswordVisible 
+                                    ? Icons.visibility 
+                                    : Icons.visibility_off, 
+                                  color: Colors.white70
+                                ),
+                                onPressed: () => context.read<AuthBloc>().add(
+                                  const TogglePasswordVisibility()
+                                ),
                               ),
                             ),
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                           ),
                         ],
                       ),
@@ -155,26 +197,42 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                     FadeTransition(
                       opacity: _buttonAnim,
                       child: ElevatedButton(
-                        onPressed: isLoading ? null : _onSubmit,
+                        onPressed: isLoading ? null : () => _onSubmit(context, isRegister),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           backgroundColor: Colors.white,
                           foregroundColor: Colors.deepPurpleAccent,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(13)
+                          ),
                           elevation: 8,
                         ),
                         child: isLoading
-                            ? const SizedBox(height: 22, width: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.deepPurple))
-                            : Text(_isRegister ? 'Register' : 'Login', style: TextStyle(fontWeight: FontWeight.bold)),
+                            ? const SizedBox(
+                                height: 22, 
+                                width: 22, 
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2, 
+                                  color: Colors.deepPurple
+                                )
+                              )
+                            : Text(
+                                isRegister ? 'Register' : 'Login', 
+                                style: const TextStyle(fontWeight: FontWeight.bold)
+                              ),
                       ),
                     ),
                     FadeTransition(
                       opacity: _buttonAnim,
                       child: TextButton(
-                        onPressed: isLoading ? null : () => setState(() => _isRegister = !_isRegister),
+                        onPressed: isLoading 
+                          ? null 
+                          : () => context.read<AuthBloc>().add(const ToggleAuthMode()),
                         child: Text(
-                          _isRegister ? 'Have an account? Login' : 'New here? Create an account',
-                          style: TextStyle(color: Colors.white70),
+                          isRegister 
+                            ? 'Have an account? Login' 
+                            : 'New here? Create an account',
+                          style: const TextStyle(color: Colors.white70),
                         ),
                       ),
                     ),
@@ -189,15 +247,21 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     );
   }
 
-  void _onSubmit() {
+  void _onSubmit(BuildContext context, bool isRegister) {
     final email = _emailController.text.trim();
     final password = _passwordController.text;
+    
     if (email.isEmpty || password.length < 6) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Enter valid email and 6+ char password')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Enter valid email and 6+ char password')
+        )
+      );
       return;
     }
+    
     final bloc = context.read<AuthBloc>();
-    if (_isRegister) {
+    if (isRegister) {
       bloc.add(RegisterRequested(email: email, password: password));
     } else {
       bloc.add(LoginRequested(email: email, password: password));
