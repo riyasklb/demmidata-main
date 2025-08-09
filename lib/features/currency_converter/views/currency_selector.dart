@@ -61,7 +61,7 @@ class _CurrencySelectorContentState extends State<_CurrencySelectorContent>
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.teal[400]!, Colors.indigo[700]!],
+                colors: [const Color.fromARGB(255, 97, 64, 155), Colors.indigo.shade700],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -258,9 +258,9 @@ class _CurrencySelectorContentState extends State<_CurrencySelectorContent>
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(22)
             ),
-            backgroundColor: Colors.tealAccent.shade100,
-            elevation: 12,
-            shadowColor: Colors.tealAccent,
+            backgroundColor: Colors.white,
+            elevation: 1,
+            shadowColor: Colors.white,
           ),
           onPressed: () => context.push(RoutePaths.amount),
           child: const Text(
