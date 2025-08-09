@@ -12,7 +12,7 @@ import 'package:currency_converter/features/currency_converter/bloc/converter_bl
 import 'package:currency_converter/features/currency_converter/bloc/converter_event.dart';
 // ignore: unused_import
 import 'package:currency_converter/features/currency_converter/bloc/converter_state.dart';
-import 'package:currency_converter/services/api_service.dart';
+import 'package:currency_converter/data/services/api_service.dart';
 
 void main() {
   testWidgets('Currency Selector BLoC Test', (WidgetTester tester) async {

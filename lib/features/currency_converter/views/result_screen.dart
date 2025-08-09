@@ -1,11 +1,11 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lottie/lottie.dart'; // add to pubspec
 import '../bloc/converter_bloc.dart';
 import '../bloc/converter_state.dart';
 import 'package:go_router/go_router.dart';
 import '../../../routes/route_paths.dart';
+
+
 
 class ResultScreen extends StatelessWidget {
   const ResultScreen({super.key});
@@ -13,26 +13,15 @@ class ResultScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Animated background gradient
+      backgroundColor: Colors.deepPurple.shade500,
       body: Stack(
         children: [
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.indigo.shade600, Colors.tealAccent.shade100],
+                colors: [Colors.deepPurple.shade400, Colors.indigo.shade700],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-              ),
-            ),
-          ),
-          // Abstract shape for depth
-          Positioned(
-            top: 36, right: -24,
-            child: Container(
-              width: 90, height: 90,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.orangeAccent.withOpacity(0.13),
               ),
             ),
           ),
@@ -50,22 +39,18 @@ class _ResultBody extends StatelessWidget {
       buildWhen: (p, c) => p.status != c.status || p.convertedValue != c.convertedValue,
       builder: (context, state) {
         if (state.status == ConverterStatus.loading) {
-          return Center(child:CircularProgressIndicator()); // Replace with your asset
+          return Center(child: CircularProgressIndicator(color: Colors.white));
         }
         if (state.status == ConverterStatus.error) {
           return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-              //  Lottie.asset('assets/error.json', height: 90), // Optional error animation
-                SizedBox(height: 12),
-                Text(state.errorMessage ?? 'Error', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
-              ],
+            child: Text(
+              state.errorMessage ?? 'Error',
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18),
             ),
           );
         }
         if (state.status != ConverterStatus.success) {
-          return Center(child: Text('No result yet'));
+          return Center(child: Text('No result yet', style: TextStyle(color: Colors.white70, fontSize: 18)));
         }
 
         final value = state.convertedValue ?? 0;
@@ -73,92 +58,171 @@ class _ResultBody extends StatelessWidget {
         final time = state.fetchedAt != null ? TimeOfDay.fromDateTime(state.fetchedAt!) : null;
 
         return Center(
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(22),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-              child: Container(
-                width: 380,
-                padding: EdgeInsets.all(30),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(22),
-                  boxShadow: [
-                    BoxShadow(color: Colors.indigoAccent.withOpacity(0.19), blurRadius: 16, offset: Offset(0, 6)),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    if (state.isStale)
-                      AnimatedContainer(
-                        duration: Duration(milliseconds: 500),
-                        curve: Curves.easeOut,
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.amber.shade100,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.warning_amber, color: Colors.orange.shade900),
-                            SizedBox(width: 7),
-                            Text('This rate is older than 5 minutes.',
-                              style: TextStyle(fontWeight: FontWeight.w500, color: Colors.orange.shade900),
-                            ),
-                          ],
-                        ),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                  width: 340,
+                  padding: EdgeInsets.symmetric(vertical: 36, horizontal: 30),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(30),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.deepPurple.shade900.withOpacity(0.13),
+                        blurRadius: 26,
+                        offset: Offset(0, 12),
                       ),
-                    SizedBox(height: 18),
-                    // Animated success icon
-               //     Lottie.asset('assets/success.json', height: 59), // Use your own asset or icon
-                    SizedBox(height: 14),
-                    Text('Converted Amount', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white)),
-                    SizedBox(height: 8),
-                    TweenAnimationBuilder<double>(
-                      tween: Tween(begin: 0, end: value),
-                      duration: const Duration(milliseconds: 700),
-                      curve: Curves.easeOutBack,
-                      builder: (context, val, child) {
-                        return Transform.scale(
-                          scale: 1 + (val == value ? 0.09 : 0.0),
-                          child: Text(
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Converted Amount',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.white.withOpacity(0.9),
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: 0.2,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 20),
+                      TweenAnimationBuilder<double>(
+                        tween: Tween(begin: 0, end: value),
+                        duration: const Duration(milliseconds: 700),
+                        curve: Curves.easeOutCubic,
+                        builder: (context, val, child) {
+                          return Text(
                             '${val.toStringAsFixed(2)} ${state.toCurrency}',
-                            style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 46,
                               fontWeight: FontWeight.bold,
-                              color: Colors.indigo[900],
-                              shadows: [Shadow(color: Colors.tealAccent, blurRadius: 14)],
+                              color: Colors.white,
+                              shadows: [Shadow(color: Colors.indigo.shade700, blurRadius: 24)],
+                            ),
+                          );
+                        },
+                      ),
+                      SizedBox(height: 24),
+
+                      // Show both currencies & flags
+               Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: [
+    Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          'From',
+          style: TextStyle(color: Colors.white, fontSize: 14),
+        ),
+        Text(
+          state.fromCurrency,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    ),
+    Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Icon(
+        Icons.arrow_forward_ios_rounded,
+        color: Colors.white,
+        size: 20,
+      ),
+    ),
+    Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          'To',
+          style: TextStyle(color: Colors.white, fontSize: 14),
+        ),
+        Text(
+          state.toCurrency,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    ),
+  ],
+),
+
+
+                      SizedBox(height: 26),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _InfoTile(
+                            icon: Icons.trending_up,
+                            label: 'Rate',
+                            value: rate.toStringAsFixed(5),
+                            bg: Colors.deepPurple.shade200,
+                          ),
+                          SizedBox(width: 12),
+                          if (time != null)
+                            _InfoTile(
+                              icon: Icons.access_time,
+                              label: 'Time',
+                              value: time.format(context),
+                              bg: Colors.indigo.shade200,
+                            ),
+                        ],
+                      ),
+                      if (state.isCached || state.isStale)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.amber.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            padding: EdgeInsets.symmetric(vertical: 7, horizontal: 13),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.warning_amber, color: Colors.amber, size: 20),
+                                SizedBox(width: 7),
+                                Text(
+                                  state.isStale
+                                      ? 'Rate is older than 5 minutes'
+                                      : 'Cached rate',
+                                  style: TextStyle(
+                                      color: Colors.amber.shade900,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
                             ),
                           ),
-                        );
-                      },
-                    ),
-                    SizedBox(height: 18),
-                    AnimatedRow(
-                      state: state,
-                      time: time,
-                      rate: rate,
-                    ),
-                    SizedBox(height: 34),
-                    Hero(
-                      tag: 'result_next_button',
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 50),
-                          backgroundColor: Colors.indigo.shade600,
-                          foregroundColor: Colors.tealAccent,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
-                          elevation: 8,
                         ),
-                        onPressed: () => context.go(RoutePaths.selector),
-                        child: Text('Start Over', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+                SizedBox(height: 30),
+                SizedBox(
+                  width: 340,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.deepPurple.shade600,
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                      elevation: 9,
+                      textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                    onPressed: () => context.go(RoutePaths.selector),
+                    child: Text('Start Over'),
+                  ),
+                ),
+              ],
             ),
           ),
         );
@@ -167,43 +231,83 @@ class _ResultBody extends StatelessWidget {
   }
 }
 
-// Animates the chips for rate info
-class AnimatedRow extends StatelessWidget {
-  final ConverterState state;
-  final TimeOfDay? time;
-  final double rate;
-  const AnimatedRow({required this.state, required this.time, required this.rate});
+// Currency and flag tile widget
+class _FlagCurrencyTile extends StatelessWidget {
+  final String flag;
+  final String code;
+  final String label;
+  const _FlagCurrencyTile({
+    required this.flag,
+    required this.code,
+    required this.label,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
+    return Column(
       children: [
-        AnimatedChip(label: 'Rate: ${rate.toStringAsFixed(5)}'),
-        SizedBox(width: 9),
-        if (time != null)
-          AnimatedChip(label: 'At: ${time!.format(context)}'),
-        SizedBox(width: 9),
-        if (state.isCached) AnimatedChip(label: 'Cached'),
+        if (flag.isNotEmpty)
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 8)],
+              image: DecorationImage(
+                image: AssetImage(flag),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        SizedBox(height: 7),
+        Text(
+          '$code',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 17,
+            letterSpacing: 0.5,
+          ),
+        ),
+        Text(label, style: TextStyle(color: Colors.white70, fontSize: 13)),
       ],
     );
   }
 }
 
-class AnimatedChip extends StatelessWidget {
+// Tile for rate/time
+class _InfoTile extends StatelessWidget {
+  final IconData icon;
   final String label;
-  const AnimatedChip({required this.label});
+  final String value;
+  final Color bg;
+  const _InfoTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.bg,
+  });
+
   @override
   Widget build(BuildContext context) {
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.8, end: 1.0), duration: Duration(milliseconds: 400),
-      builder: (context, scale, _) => Transform.scale(
-        scale: scale,
-        child: Chip(
-          label: Text(label, style: TextStyle(fontWeight: FontWeight.w600)),
-          backgroundColor: Colors.white.withOpacity(0.17),
-          labelStyle: TextStyle(color: Colors.indigo),
-          shape: StadiumBorder(),
-        ),
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 18),
+      decoration: BoxDecoration(
+        color: bg.withOpacity(0.8),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 22, color: Colors.white),
+          SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label, style: TextStyle(fontSize: 13, color: Colors.white70)),
+              Text(value, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 16)),
+            ],
+          )
+        ],
       ),
     );
   }
