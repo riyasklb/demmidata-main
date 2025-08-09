@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../authentication/views/login_screen.dart';
-import '../currency_converter/views/amount_input.dart';
-import '../currency_converter/views/currency_selector.dart';
-import '../currency_converter/views/error_screen.dart';
-import '../currency_converter/views/result_screen.dart';
+import '../features/authentication/views/login_screen.dart';
+import '../features/currency_converter/views/amount_input.dart';
+import '../features/currency_converter/views/currency_selector.dart';
+import '../features/currency_converter/views/error_screen.dart';
+import '../features/currency_converter/views/result_screen.dart';
 import 'route_paths.dart';
 
 class AppRouter {
@@ -26,7 +26,7 @@ class AppRouter {
         ),
         GoRoute(
           path: RoutePaths.amount,
-          pageBuilder: (context, state) => _flip(const AmountInputScreen()),
+          pageBuilder: (context, state) => _scale(const AmountInputScreen()),
         ),
         GoRoute(
           path: RoutePaths.result,
@@ -54,29 +54,6 @@ class AppRouter {
     );
   }
 
-  static CustomTransitionPage _flip(Widget child) {
-    return CustomTransitionPage(
-      child: child,
-      transitionDuration: const Duration(milliseconds: 500),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        final rotate = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: animation, curve: Curves.easeInOut));
-        return AnimatedBuilder(
-          animation: rotate,
-          child: child,
-          builder: (context, child) {
-            final angle = rotate.value * 3.1415926;
-            return Transform(
-              alignment: Alignment.center,
-              transform: Matrix4.identity()
-                ..setEntry(3, 2, 0.002)
-                ..rotateY(angle),
-              child: child,
-            );
-          },
-        );
-      },
-    );
-  }
 
   static CustomTransitionPage _scale(Widget child) {
     return CustomTransitionPage(

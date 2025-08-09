@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/env.dart';
-import '../currency_converter/models/rate_cache.dart';
+import '../features/currency_converter/models/rate_cache.dart';
 
 class BestRateResult {
   final double rate;

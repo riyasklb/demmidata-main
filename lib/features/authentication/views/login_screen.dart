@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
-import '../../routes/route_paths.dart';
+import '../../../routes/route_paths.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});

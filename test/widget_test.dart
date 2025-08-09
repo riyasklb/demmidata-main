@@ -8,10 +8,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:currency_converter/currency_converter/bloc/converter_bloc.dart';
-import 'package:currency_converter/currency_converter/bloc/converter_event.dart';
+import 'package:currency_converter/features/currency_converter/bloc/converter_bloc.dart';
+import 'package:currency_converter/features/currency_converter/bloc/converter_event.dart';
 // ignore: unused_import
-import 'package:currency_converter/currency_converter/bloc/converter_state.dart';
+import 'package:currency_converter/features/currency_converter/bloc/converter_state.dart';
 import 'package:currency_converter/services/api_service.dart';
 
 void main() {

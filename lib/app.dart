@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'authentication/bloc/auth_bloc.dart';
-import 'authentication/bloc/auth_event.dart';
-import 'authentication/bloc/auth_state.dart';
+import 'features/authentication/bloc/auth_bloc.dart';
+import 'features/authentication/bloc/auth_event.dart';
+import 'features/authentication/bloc/auth_state.dart';
 // ignore: unused_import
-import 'authentication/views/login_screen.dart';
-import 'currency_converter/bloc/converter_bloc.dart';
+import 'features/authentication/views/login_screen.dart';
+import 'features/currency_converter/bloc/converter_bloc.dart';
 import 'services/api_service.dart';
 import 'services/auth_service.dart';
 import 'routes/app_router.dart';

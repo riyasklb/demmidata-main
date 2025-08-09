@@ -8,7 +8,7 @@ import '../bloc/converter_bloc.dart';
 import '../bloc/converter_event.dart';
 import '../bloc/converter_state.dart';
 import '../models/currency_model.dart';
-import '../../routes/route_paths.dart';
+import '../../../routes/route_paths.dart';
 import '../../authentication/bloc/auth_bloc.dart';
 import '../../authentication/bloc/auth_event.dart';
 
